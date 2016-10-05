@@ -1,0 +1,23 @@
+Dependencies
+=============
+
+This set of scripts depends on:
+
+* q-text-as-data (Debian/Ubuntu package)
+* jira python package (pip install jira)
+
+Usage
+========
+
+1. Download all worklog items to CSV file:
+
+python get_worklog.py output_20161005.csv <username> <password>
+
+
+2. Analyze:
+
+./get_stats.sh output_20161005.csv
+
+
+
+

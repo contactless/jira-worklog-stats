@@ -23,20 +23,33 @@ jira = JIRA(options=options, basic_auth=(sys.argv[2], sys.argv[3]))    # a usern
 # Get the mutable application properties for this server (requires jira-system-administrators permission)
 #~ props = jira.application_properties()
 
-# Find all issues reported by the admin
-issues = jira.search_issues('',maxResults=10000)
-#~ issues = jira.search_issues('project=SOFT',maxResults=10000)
-print len(issues)
+
 
 with open(fname, "wt") as csvfile:
 	writer = csv.writer(csvfile, delimiter=',',
 	                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
 	writer.writerow(["issue_id", "worklog_id", "author", "comment", "created", "started", "seconds"])
 
-	for issue in issues:
-		for worklog in jira.worklogs(issue):
-			row = [issue.id, worklog.id, worklog.author, worklog.comment, worklog.created, worklog.started, worklog.timeSpentSeconds]
-			row = [unicode(x).encode('utf-8') for x in row]
-			print row
-			writer.writerow(row)
 
+	limit = 1000
+	current_pos = 0
+
+	while True:
+		# Find all issues reported by the admin
+		print "get %d issues starting from %d" % (limit, current_pos)
+		issues = jira.search_issues('',startAt=current_pos, maxResults=limit)
+		#~ issues = jira.search_issues('project=SOFT',maxResults=10000)
+		print len(issues)
+
+
+		for issue in issues:
+			for worklog in jira.worklogs(issue):
+				row = [issue.id, worklog.id, worklog.author, worklog.comment, worklog.created, worklog.started, worklog.timeSpentSeconds]
+				row = [unicode(x).encode('utf-8') for x in row]
+				print row
+				writer.writerow(row)
+
+		if len(issues) >= limit:
+			current_pos += len(issues)
+		else:
+			break

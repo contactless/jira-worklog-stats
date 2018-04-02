@@ -51,7 +51,7 @@ with open(fname, "wt") as csvfile:
 
 		for i, issue in enumerate(issues):
 			for worklog in jira.worklogs(issue):
-				row = [issue.id, worklog.id, worklog.author, worklog.comment, worklog.created, worklog.started, worklog.timeSpentSeconds]
+				row = [issue.id, worklog.id, worklog.author, getattr(worklog, 'comment',''), worklog.created, worklog.started, worklog.timeSpentSeconds]
 				row = [unicode(x).encode('utf-8') for x in row]
 				# print row
 				writer.writerow(row)
